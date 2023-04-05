@@ -30,6 +30,8 @@ class MultisigApproval {
     try {
       console.log('groupTokenId: ', groupTokenId)
 
+      await this.nfts.getNftsFromGroup()
+
       return true
     } catch (err) {
       console.error('Error in getNftInfo()')

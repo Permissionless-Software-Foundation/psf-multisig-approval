@@ -52,4 +52,32 @@ describe('#NFTs', () => {
       }
     })
   })
+
+  describe('#getNftsFromGroup', () => {
+    it('should get NFT token IDs from a Group token', async () => {
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut.wallet, 'getTokenData').resolves({
+        genesisData: {
+          nfts: ['a', 'b', 'c']
+        }
+      })
+
+      const result = await uut.getNftsFromGroup('fake-group-id')
+
+      assert.isArray(result)
+    })
+
+    it('should catch and throw errors', async () => {
+      try {
+        // Mock dependencies and force desired code path
+        sandbox.stub(uut.wallet, 'getTokenData').rejects(new Error('test error'))
+
+        await uut.getNftsFromGroup()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
 })

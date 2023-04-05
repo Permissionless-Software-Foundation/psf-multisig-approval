@@ -55,17 +55,25 @@ describe('#MultisigApproval.js', () => {
 
   describe('#getNftInfo', () => {
     it('should get info about NFTs associated with a group token', async () => {
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut.nfts, 'getNftsFromGroup').resolves()
+
       const result = await uut.getNftInfo()
 
       assert.equal(result, true)
     })
 
-    // it('should catch, report, and throw errors', async () => {
-    //   try {
-    //
-    //   } catch(err) {
-    //
-    //   }
-    // })
+    it('should catch, report, and throw errors', async () => {
+      try {
+        // Mock dependencies and force desired code path
+        sandbox.stub(uut.nfts, 'getNftsFromGroup').rejects(new Error('test error'))
+
+        await uut.getNftInfo()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
   })
 })
