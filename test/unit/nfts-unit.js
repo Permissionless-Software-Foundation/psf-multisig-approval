@@ -80,4 +80,37 @@ describe('#NFTs', () => {
       }
     })
   })
+
+  describe('#getAddrsFromNfts', () => {
+    it('should should return addresses associated with each NFT', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.wallet, 'getTokenData').resolves({
+        genesisData: {
+          nftHolder: 'sam'
+        }
+      })
+
+      const nfts = ['a']
+
+      const result = await uut.getAddrsFromNfts(nfts)
+
+      assert.isArray(result)
+      assert.equal(result[0], 'sam')
+    })
+
+    it('should catch and throw errors', async () => {
+      try {
+        // Force an error
+        sandbox.stub(uut.wallet, 'getTokenData').rejects(new Error('test error'))
+
+        const nfts = ['a']
+
+        await uut.getAddrsFromNfts(nfts)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
 })
