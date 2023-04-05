@@ -1,6 +1,6 @@
 /*
-  An npm JavaScript library for front end web apps. Implements a minimal
-  Bitcoin Cash wallet.
+  This library implement PS009 specification:
+  https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps009-multisig-approval.md
 */
 
 /* eslint-disable no-async-promise-executor */
