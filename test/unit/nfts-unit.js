@@ -113,4 +113,61 @@ describe('#NFTs', () => {
       }
     })
   })
+
+  describe('#findKeys', () => {
+    it('should collect public keys for an addresses', async () => {
+      const addrs = ['bitcoincash:qzwahhjldv0qsecfxlmcenzvkjv9rlv9au2hcfggl6']
+      const nfts = ['fb707a9d8a4d6ba47ef0c510714ca46d4523cd29c8f4e3fd6a63a85edb8b05d2']
+
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.wallet, 'getPubKey').resolves('02055962631b236ddcd2c17cd0b711f12438b93bcf01b206cadb351cc3e6e3e269')
+
+      const result = await uut.findKeys(addrs, nfts)
+      // console.log('result: ', result)
+
+      // Assert expected properties exist
+      assert.property(result, 'keys')
+      assert.property(result, 'keysNotFound')
+
+      // Assert that each property is an array.
+      assert.isArray(result.keys)
+      assert.isArray(result.keysNotFound)
+
+      // Assert expected values exist
+      assert.equal(result.keys[0].addr, 'bitcoincash:qzwahhjldv0qsecfxlmcenzvkjv9rlv9au2hcfggl6')
+      assert.equal(result.keys[0].pubKey, '02055962631b236ddcd2c17cd0b711f12438b93bcf01b206cadb351cc3e6e3e269')
+    })
+
+    it('should handle address without a public key', async () => {
+      const addrs = ['bitcoincash:qzwahhjldv0qsecfxlmcenzvkjv9rlv9au2hcfggl6']
+      const nfts = ['fb707a9d8a4d6ba47ef0c510714ca46d4523cd29c8f4e3fd6a63a85edb8b05d2']
+
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.wallet, 'getPubKey').resolves('not found')
+
+      const result = await uut.findKeys(addrs, nfts)
+      // console.log('result: ', result)
+
+      // Assert expected properties exist
+      assert.property(result, 'keys')
+      assert.property(result, 'keysNotFound')
+
+      // Assert that each property is an array.
+      assert.isArray(result.keys)
+      assert.isArray(result.keysNotFound)
+
+      // Assert expected values exist
+      assert.equal(result.keysNotFound[0], 'bitcoincash:qzwahhjldv0qsecfxlmcenzvkjv9rlv9au2hcfggl6')
+    })
+
+    it('should catch and throw errors', async () => {
+      try {
+        await uut.findKeys()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Cannot read')
+      }
+    })
+  })
 })

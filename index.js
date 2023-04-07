@@ -28,13 +28,17 @@ class MultisigApproval {
   // can be used.
   async getNftInfo (groupTokenId = '8e8d90ebdb1791d58eba7acd428ff3b1e21c47fb7aba2ba3b5b815aa0fe7d6d5') {
     try {
-      console.log('groupTokenId: ', groupTokenId)
+      // console.log('groupTokenId: ', groupTokenId)
 
-      await this.nfts.getNftsFromGroup()
+      const nfts = await this.nfts.getNftsFromGroup()
 
-      return true
+      const addrs = await this.nfts.getAddrsFromNfts(nfts)
+
+      const { keys, keysNotFound } = await this.nfts.findKeys(addrs, nfts)
+
+      return { keys, keysNotFound }
     } catch (err) {
-      console.error('Error in getNftInfo()')
+      console.error('Error in getNftInfo(): ', err)
       throw err
     }
   }
