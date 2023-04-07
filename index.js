@@ -6,6 +6,7 @@
 /* eslint-disable no-async-promise-executor */
 
 // global libraries
+const bitcore = require('bitcore-lib-cash')
 
 // Local libraries
 const NFTs = require('./lib/nfts')
@@ -39,6 +40,55 @@ class MultisigApproval {
       return { keys, keysNotFound }
     } catch (err) {
       console.error('Error in getNftHolderInfo(): ', err)
+      throw err
+    }
+  }
+
+  // Generate a P2SH multisignature wallet from the public keys of the NFT holders.
+  // The address for the wallet is returned.
+  // The input for this function should be the `keys` output from
+  // getNftHolderInfo()
+  createMultisigAddress (inObj = {}) {
+    try {
+
+      const {keyPairs} = inObj
+      let requiredSigners = inObj.requiredSigners
+
+      // Input validation
+      if(!Array.isArray(keyPairs)) {
+        throw new Error('keyPairs must be an array containing public keys')
+      }
+
+      // Isolate just an array of public keys.
+      const pubKeys = []
+      for (let i = 0; i < keyPairs.length; i++) {
+        const thisPair = keyPairs[i]
+
+        pubKeys.push(thisPair.pubKey)
+      }
+
+      // If the number of required signers is not specified, then default to
+      // a 50% + 1 threashold.
+      if(!requiredSigners) {
+        requiredSigners = Math.floor(pubKeys.length / 2) + 1
+      }
+
+      // Multisig Address
+      const msAddr = new bitcore.Address(pubKeys, requiredSigners)
+
+      // Locking Script in hex representation.
+      const scriptHex = new bitcore.Script(msAddr).toHex()
+
+      const walletObj = {
+        address: msAddr.toString(),
+        scriptHex,
+        publicKeys: pubKeys,
+        requiredSigners
+      }
+
+      return walletObj
+    } catch (err) {
+      console.error('Error in createMultisigWallet()')
       throw err
     }
   }

@@ -32,7 +32,7 @@
   },
   "repository": "Permissionless-Software-Foundation/psf-multisig-approval",
   "dependencies": {
-    "@psf/bch-js": "6.7.1"
+    "bitcore-lib-cash": "10.0.2"
   },
   "devDependencies": {
     "apidoc": "0.54.0",
