@@ -29,7 +29,7 @@ PS009 uses NFTs as 'homing beacons'. It generates a multisignature wallet from t
 ```javascript
 const groupTokenId = '8e8d90ebdb1791d58eba7acd428ff3b1e21c47fb7aba2ba3b5b815aa0fe7d6d5'
 
-const result = await ps009.getNftInfo(groupTokenId)
+const result = await ps009.getNftHolderInfo(groupTokenId)
 console.log(result)
 
 /*

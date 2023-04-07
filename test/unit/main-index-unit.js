@@ -53,14 +53,14 @@ describe('#MultisigApproval.js', () => {
     })
   })
 
-  describe('#getNftInfo', () => {
+  describe('#getNftHolderInfo', () => {
     it('should get info about NFTs associated with a group token', async () => {
       // Mock dependencies and force desired code path
       sandbox.stub(uut.nfts, 'getNftsFromGroup').resolves()
       sandbox.stub(uut.nfts, 'getAddrsFromNfts').resolves()
       sandbox.stub(uut.nfts, 'findKeys').resolves({ keys: [], keysNotFound: [] })
 
-      const result = await uut.getNftInfo()
+      const result = await uut.getNftHolderInfo()
 
       assert.property(result, 'keys')
       assert.property(result, 'keysNotFound')
@@ -73,7 +73,7 @@ describe('#MultisigApproval.js', () => {
         // Mock dependencies and force desired code path
         sandbox.stub(uut.nfts, 'getNftsFromGroup').rejects(new Error('test error'))
 
-        await uut.getNftInfo()
+        await uut.getNftHolderInfo()
 
         assert.fail('Unexpected code path')
       } catch (err) {

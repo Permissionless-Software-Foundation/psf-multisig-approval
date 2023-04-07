@@ -21,9 +21,9 @@ describe('#psf-multisig-approval', () => {
     uut = new MultisigApproval({ wallet })
   })
 
-  describe('#getNftInfo', () => {
+  describe('#getNftHolderInfo', () => {
     it('should get address and pubkeys for Minting Council NFT holders', async () => {
-      const result = await uut.getNftInfo()
+      const result = await uut.getNftHolderInfo()
       console.log('result: ', result)
     })
   })

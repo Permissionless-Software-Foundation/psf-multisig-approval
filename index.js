@@ -26,7 +26,7 @@ class MultisigApproval {
   // NFTs. It returns an object with all that information in it.
   // The function defaults to the PSF Minting Council, but any Group token ID
   // can be used.
-  async getNftInfo (groupTokenId = '8e8d90ebdb1791d58eba7acd428ff3b1e21c47fb7aba2ba3b5b815aa0fe7d6d5') {
+  async getNftHolderInfo (groupTokenId = '8e8d90ebdb1791d58eba7acd428ff3b1e21c47fb7aba2ba3b5b815aa0fe7d6d5') {
     try {
       // console.log('groupTokenId: ', groupTokenId)
 
@@ -38,7 +38,7 @@ class MultisigApproval {
 
       return { keys, keysNotFound }
     } catch (err) {
-      console.error('Error in getNftInfo(): ', err)
+      console.error('Error in getNftHolderInfo(): ', err)
       throw err
     }
   }
