@@ -68,7 +68,31 @@ console.log(result)
 
 If the holder of the NFT has not made any transactions, then their public key will not be on the blockchain. In that case, the NFT and address will be added to the `keysNotFound` array. Those holders will not be included in the multisignature wallet.
 
+## Get an Approval Transaction
+This function will take a BCH address as input. It will search the addresses transaction history and will return an object about the first `APPROVAL` transaction that it finds. If it can't find one, it will return null.
 
+```javascript
+const address = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'
+
+const result = await ps009.getApprovalTx({address})
+console.log(result)
+
+/*
+  {
+    approvalTxid: 'a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900',
+    updateTxid: 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f',
+    approvalTxDetails: {
+      txid: 'a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900',
+      vin: [ [Object] ],
+      vout: [ [Object], [Object], [Object] ],
+      ...
+      isValidSlp: false
+    },
+    opReturn: 'j\x07APPROVE@f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
+  }
+
+*/
+```
 
 # License
 [MIT](LICENSE.md)
