@@ -57,10 +57,15 @@ describe('#MultisigApproval.js', () => {
     it('should get info about NFTs associated with a group token', async () => {
       // Mock dependencies and force desired code path
       sandbox.stub(uut.nfts, 'getNftsFromGroup').resolves()
+      sandbox.stub(uut.nfts, 'getAddrsFromNfts').resolves()
+      sandbox.stub(uut.nfts, 'findKeys').resolves({ keys: [], keysNotFound: [] })
 
       const result = await uut.getNftInfo()
 
-      assert.equal(result, true)
+      assert.property(result, 'keys')
+      assert.property(result, 'keysNotFound')
+      assert.isArray(result.keys)
+      assert.isArray(result.keysNotFound)
     })
 
     it('should catch, report, and throw errors', async () => {
