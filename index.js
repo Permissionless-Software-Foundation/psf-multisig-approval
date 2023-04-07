@@ -3,8 +3,6 @@
   https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps009-multisig-approval.md
 */
 
-/* eslint-disable no-async-promise-executor */
-
 // global libraries
 const bitcore = require('bitcore-lib-cash')
 
@@ -50,26 +48,25 @@ class MultisigApproval {
   // getNftHolderInfo()
   createMultisigAddress (inObj = {}) {
     try {
-
-      const {keyPairs} = inObj
+      const { keys } = inObj
       let requiredSigners = inObj.requiredSigners
 
       // Input validation
-      if(!Array.isArray(keyPairs)) {
-        throw new Error('keyPairs must be an array containing public keys')
+      if (!Array.isArray(keys)) {
+        throw new Error('keys must be an array containing public keys')
       }
 
       // Isolate just an array of public keys.
       const pubKeys = []
-      for (let i = 0; i < keyPairs.length; i++) {
-        const thisPair = keyPairs[i]
+      for (let i = 0; i < keys.length; i++) {
+        const thisPair = keys[i]
 
         pubKeys.push(thisPair.pubKey)
       }
 
       // If the number of required signers is not specified, then default to
       // a 50% + 1 threashold.
-      if(!requiredSigners) {
+      if (!requiredSigners) {
         requiredSigners = Math.floor(pubKeys.length / 2) + 1
       }
 

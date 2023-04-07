@@ -5,18 +5,18 @@
 // npm libraries
 const assert = require('chai').assert
 const sinon = require('sinon')
-// const cloneDeep = require('lodash.clonedeep')
+const cloneDeep = require('lodash.clonedeep')
 const SlpWallet = require('minimal-slp-wallet')
 
 // Mocking data libraries.
-// const mockDataLib = require('./mocks/util-mocks')
 
-// Unit under test
+// Local libraries
 const MultisigApproval = require('../../index')
+const mockDataLib = require('./mocks/main-index-mocks')
 
 describe('#MultisigApproval.js', () => {
   let sandbox
-  // let mockData
+  let mockData
   let uut
   let wallet
 
@@ -30,7 +30,7 @@ describe('#MultisigApproval.js', () => {
     sandbox = sinon.createSandbox()
 
     // Clone the mock data.
-    // mockData = cloneDeep(mockDataLib)
+    mockData = cloneDeep(mockDataLib)
 
     uut = new MultisigApproval({ wallet })
   })
@@ -78,6 +78,32 @@ describe('#MultisigApproval.js', () => {
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#createMultisigAddress', () => {
+    it('should generate a P2SH multisig address', async () => {
+      const result = await uut.createMultisigAddress({ keys: mockData.pubkeys })
+      // console.log('result: ', result)
+
+      // Assert that expected properties exist
+      assert.property(result, 'address')
+      assert.property(result, 'scriptHex')
+      assert.property(result, 'publicKeys')
+      assert.property(result, 'requiredSigners')
+
+      // Assert that expected address is generated
+      assert.equal(result.address, 'bitcoincash:pqntzt6wcp38h8ud68wjnwh437uek76lhvhlwcm4fj')
+    })
+
+    it('should catch, report, and throw errors', async () => {
+      try {
+        await uut.createMultisigAddress()
+
+        assert.fail('unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'keys must be an array containing public keys')
       }
     })
   })

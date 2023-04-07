@@ -41,9 +41,9 @@ describe('#psf-multisig-approval', () => {
     it('should generate a multisig address from token holder info', async () => {
       const tokenHolderInfo = await uut.getNftHolderInfo()
 
-      const keyPairs = tokenHolderInfo.keys
+      const keys = tokenHolderInfo.keys
 
-      const result = await uut.createMultisigAddress({keyPairs})
+      const result = await uut.createMultisigAddress({ keys })
       // console.log('result: ', result)
 
       assert.property(result, 'address')
