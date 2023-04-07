@@ -8,6 +8,7 @@ const bitcore = require('bitcore-lib-cash')
 
 // Local libraries
 const NFTs = require('./lib/nfts')
+const UtilLib = require('./lib/util')
 
 class MultisigApproval {
   constructor (localConfig = {}) {
@@ -17,7 +18,17 @@ class MultisigApproval {
     }
 
     // Encapsulate dependencies
+    this.bchjs = this.wallet.bchjs
     this.nfts = new NFTs(localConfig)
+    this.util = new UtilLib(localConfig)
+
+    // Bind the this object to all subfunctions in this class
+    this.getNftHolderInfo = this.getNftHolderInfo.bind(this)
+    this.createMultisigAddress = this.createMultisigAddress.bind(this)
+    this.getApprovalTx = this.getApprovalTx.bind(this)
+
+    // Create a transaction details cache, to reduce the number of API calls.
+    this.txCache = {}
   }
 
   // This function retrieves the NFTs associated with a Group token ID. It then
@@ -89,6 +100,109 @@ class MultisigApproval {
       throw err
     }
   }
+
+  // Given a BCH address, scan its transaction history to find the latest
+  // APPROVAL transaction. This function returns the TXID of the UPDATE
+  // transaction that the APPROVAL transaction approves.
+  // If no APPROVAL transaction can be found, then function returns null.
+  // An optional input, filterTxids, is an array of transaction IDs to ignore. This can
+  // be used to ignore/skip any known, fake approval transactions.
+  async getApprovalTx (inObj = {}) {
+    try {
+      let address = inObj.address
+      const { filterTxids } = inObj
+
+      // Input validation
+      if (address.includes('simpleledger:')) {
+        address = this.bchjs.SLP.Address.toCashAddress(address)
+      }
+      if (!address.includes('bitcoincash:')) {
+        throw new Error('Input address must start with bitcoincash: or simpleledger:')
+      }
+
+      // Get the transaction history for the address
+      const txHistory = await this.wallet.getTransactions(address)
+      // console.log('txHistory: ', JSON.stringify(txHistory, null, 2))
+
+      // Loop through the transaction history
+      for (let i = 0; i < txHistory.length; i++) {
+        const thisTxid = txHistory[i]
+
+        // const height = thisTxid.height
+        const txid = thisTxid.tx_hash
+
+        // Skip the txid if it is in the filter list.
+        if (Array.isArray(filterTxids)) {
+          const txidFound = filterTxids.find(x => x === txid)
+          // console.log('txidFound: ', txidFound)
+          if (txidFound) {
+            continue
+          }
+        }
+
+        // Get the transaction details for the transaction
+        const txDetails = await this.util.getTxData(txid)
+        // console.log('txDetails: ', JSON.stringify(txDetails, null, 2))
+        // console.log(`txid: ${txid}`)
+
+        const out2ascii = Buffer.from(txDetails.vout[0].scriptPubKey.hex, 'hex').toString('ascii')
+        // console.log('out2ascii: ', out2ascii)
+
+        // If the first output is not an OP_RETURN, then the tx can be discarded.
+        if (!out2ascii.includes('APPROVE')) {
+          continue
+        }
+
+        const updateTxid = out2ascii.slice(10)
+        // console.log('updateTxid: ', updateTxid)
+
+        const outObj = {
+          approvalTxid: txid,
+          updateTxid,
+          approvalTxDetails: txDetails,
+          opReturn: out2ascii
+        }
+
+        return outObj
+
+        // If the first output is not an OP_RETURN, then the tx can be discarded.
+        // if (!txDetails.vout[0].scriptPubKey.asm.includes('OP_RETURN')) {
+        //   continue
+        // }
+
+        // Convert the asm field into sections
+        // const asmSections = txDetails.vout[0].scriptPubKey.asm.split(' ')
+        // console.log('asmSections: ', asmSections)
+        //
+        // // Analyze the second part (the first part that is not OP_RETURN)
+        // const part1 = Buffer.from(asmSections[1], 'hex').toString('ascii')
+        // console.log('part1: ', part1)
+        //
+        // if (part1.includes('APPROVE')) {
+        //   console.log('Approval transaction detected')
+        //   const updateTxid = Buffer.from(asmSections[2], 'hex').toString('ascii')
+        //
+        //   return updateTxid
+        // }
+      }
+
+      return null
+    } catch (err) {
+      console.error('Error in getApprovedData()')
+      throw err
+    }
+  }
+
+  // Given an CID, this function will retrieve the approved data from an IPFS
+  // gateway.
+  // getCidData()
+
+  // This function will validate the approval transaction. Given the TXID of the
+  // approval transaction, and the data from the update transaction, this
+  // function will return `true` if a threshold of NFT holders can be verified
+  // to have signed the approval transaction. Unless explicitly overridden, the
+  // threshold is set by the `requiredSigners` number from the IPFS data.
+  // validateApproval()
 }
 
 module.exports = MultisigApproval

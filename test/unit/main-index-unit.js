@@ -84,7 +84,7 @@ describe('#MultisigApproval.js', () => {
 
   describe('#createMultisigAddress', () => {
     it('should generate a P2SH multisig address', async () => {
-      const result = await uut.createMultisigAddress({ keys: mockData.pubkeys })
+      const result = await uut.createMultisigAddress({ keys: mockData.pubkeys01 })
       // console.log('result: ', result)
 
       // Assert that expected properties exist
@@ -104,6 +104,124 @@ describe('#MultisigApproval.js', () => {
         assert.fail('unexpected result')
       } catch (err) {
         assert.include(err.message, 'keys must be an array containing public keys')
+      }
+    })
+  })
+
+  describe('#getApprovalTx', () => {
+    it('should return object with update txid', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.wallet, 'getTransactions').resolves(mockData.txHistory01)
+      sandbox.stub(uut.util, 'getTxData').resolves(mockData.approvalTxDetails01)
+
+      const address = 'bitcoincash:fake-addr'
+
+      const result = await uut.getApprovalTx({ address })
+      // console.log('result: ', result)
+
+      // Assert that the returned object has the expected properties.
+      assert.property(result, 'approvalTxid')
+      assert.property(result, 'updateTxid')
+      assert.property(result, 'approvalTxDetails')
+      assert.property(result, 'opReturn')
+
+      // Assert that TXIDs are returned.
+      assert.equal(result.updateTxid.length, 64)
+      assert.equal(result.approvalTxid.length, 64)
+    })
+
+    it('should handle SLP addresses', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.wallet, 'getTransactions').resolves(mockData.txHistory01)
+      sandbox.stub(uut.util, 'getTxData').resolves(mockData.approvalTxDetails01)
+
+      const address = 'simpleledger:qpq4uxk6vc2hn3rw8tevpm570xgs22e6rskpzpenqg'
+
+      const result = await uut.getApprovalTx({ address })
+      // console.log('result: ', result)
+
+      // Assert that the returned object has the expected properties.
+      assert.property(result, 'approvalTxid')
+      assert.property(result, 'updateTxid')
+      assert.property(result, 'approvalTxDetails')
+      assert.property(result, 'opReturn')
+
+      // Assert that TXIDs are returned.
+      assert.equal(result.updateTxid.length, 64)
+      assert.equal(result.approvalTxid.length, 64)
+    })
+
+    it('should skip a TXID in the filter list', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.wallet, 'getTransactions').resolves(mockData.txHistory02)
+      sandbox.stub(uut.util, 'getTxData').resolves(mockData.approvalTxDetails01)
+
+      const address = 'bitcoincash:fake-addr'
+
+      const result = await uut.getApprovalTx({
+        address,
+        filterTxids: ['095b299da0be5bb2367e62a5628cef603c7d6e709dd72f532632e9c0acf665d3']
+      })
+      // console.log('result: ', result)
+
+      // Assert that the returned object has the expected properties.
+      assert.property(result, 'approvalTxid')
+      assert.property(result, 'updateTxid')
+      assert.property(result, 'approvalTxDetails')
+      assert.property(result, 'opReturn')
+
+      // Assert that TXIDs are returned.
+      assert.equal(result.updateTxid.length, 64)
+      assert.equal(result.approvalTxid.length, 64)
+    })
+
+    it('should skip a TXID if it does contain APPROVAL in the OP_RETURN', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.wallet, 'getTransactions').resolves(mockData.txHistory02)
+      sandbox.stub(uut.util, 'getTxData')
+        .onCall(0).resolves(mockData.updateTxDetails01)
+        .onCall(1).resolves(mockData.approvalTxDetails01)
+
+      const address = 'bitcoincash:fake-addr'
+
+      const result = await uut.getApprovalTx({
+        address
+      })
+      // console.log('result: ', result)
+
+      // Assert that the returned object has the expected properties.
+      assert.property(result, 'approvalTxid')
+      assert.property(result, 'updateTxid')
+      assert.property(result, 'approvalTxDetails')
+      assert.property(result, 'opReturn')
+
+      // Assert that TXIDs are returned.
+      assert.equal(result.updateTxid.length, 64)
+      assert.equal(result.approvalTxid.length, 64)
+    })
+
+    it('should return null if approval TX can not be found', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.wallet, 'getTransactions').resolves(mockData.txHistory01)
+      sandbox.stub(uut.util, 'getTxData').resolves(mockData.updateTxDetails01)
+
+      const address = 'bitcoincash:fake-addr'
+
+      const result = await uut.getApprovalTx({ address })
+      // console.log('result: ', result)
+
+      assert.equal(result, null)
+    })
+
+    it('should throw an error if invalid address format is used', async () => {
+      try {
+        const address = 'fake-addr'
+
+        await uut.getApprovalTx({ address })
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Input address must start with bitcoincash: or simpleledger:')
       }
     })
   })
