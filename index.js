@@ -5,22 +5,43 @@
 
 /* eslint-disable no-async-promise-executor */
 
-'use strict'
+// global libraries
 
-const BCHJS = require('@psf/bch-js')
+// Local libraries
+const NFTs = require('./lib/nfts')
 
-const Util = require('./lib/util')
-const util = new Util()
+class MultisigApproval {
+  constructor (localConfig = {}) {
+    this.wallet = localConfig.wallet
+    if (!this.wallet) {
+      throw new Error('Instance of minimal-slp-wallet must be passed in as a property called \'wallet\', when initializing the psf-multisig-approval library.')
+    }
 
-let _this // local global for 'this'.
+    // Encapsulate dependencies
+    this.nfts = new NFTs(localConfig)
+  }
 
-class BoilplateLib {
-  constructor () {
-    _this = this
+  // This function retrieves the NFTs associated with a Group token ID. It then
+  // tries to retrieve the BCH addresses and public keys of the holders of those
+  // NFTs. It returns an object with all that information in it.
+  // The function defaults to the PSF Minting Council, but any Group token ID
+  // can be used.
+  async getNftInfo (groupTokenId = '8e8d90ebdb1791d58eba7acd428ff3b1e21c47fb7aba2ba3b5b815aa0fe7d6d5') {
+    try {
+      // console.log('groupTokenId: ', groupTokenId)
 
-    _this.bchjs = new BCHJS()
-    _this.util = util
+      const nfts = await this.nfts.getNftsFromGroup()
+
+      const addrs = await this.nfts.getAddrsFromNfts(nfts)
+
+      const { keys, keysNotFound } = await this.nfts.findKeys(addrs, nfts)
+
+      return { keys, keysNotFound }
+    } catch (err) {
+      console.error('Error in getNftInfo(): ', err)
+      throw err
+    }
   }
 }
 
-module.exports = BoilplateLib
+module.exports = MultisigApproval
