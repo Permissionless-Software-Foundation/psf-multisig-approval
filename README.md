@@ -3,7 +3,7 @@
 This is an npm library for node.js. It implements the [PS009 specification for multisignature approval](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps009-multisig-approval.md). The main consumers of this library of [psf-bch-wallet](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet) and [ipfs-p2wdb-service](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service).
 
 ## Instancing Library
-This library depends on [minimal-slp-wallet](https://www.npmjs.com/package/minimal-slp-wallet). An instance of that library is expected to injected into this this one when instantiated. Here is an example:
+This library depends on [minimal-slp-wallet](https://www.npmjs.com/package/minimal-slp-wallet). An instance of that library is expected to be injected into this this one when instantiated. Here is an example:
 
 ```javascript
 const SlpWallet = require('minimal-slp-wallet')
@@ -24,7 +24,9 @@ start()
 ```
 
 ## Get NFT Holder Information
-PS009 uses NFTs as 'homing beacons'. It generates a multisignature wallet from the public keys of the NFT holders. Finding the addresses and public keys of the NFT holders is a foundational feature of the protocol. Here is how you do that:
+PS009 uses NFTs as 'homing beacons'. It generates a multisignature wallet from the public keys of the NFT holders. Finding the addresses and public keys of the NFT holders is a foundational feature of the protocol. All NFTs are connected by the Group Token ID that generated them.
+
+If the holder of the NFT has not made any transactions, then their public key will not be on the blockchain. In that case, the NFT and address will be added to the `keysNotFound` array. Those holders will not be included in the multisignature wallet.
 
 ```javascript
 const groupTokenId = '8e8d90ebdb1791d58eba7acd428ff3b1e21c47fb7aba2ba3b5b815aa0fe7d6d5'
@@ -66,10 +68,8 @@ console.log(result)
 */
 ```
 
-If the holder of the NFT has not made any transactions, then their public key will not be on the blockchain. In that case, the NFT and address will be added to the `keysNotFound` array. Those holders will not be included in the multisignature wallet.
-
 ## Get an Approval Transaction
-This function will take a BCH address as input. It will search the addresses transaction history and will return an object about the first `APPROVAL` transaction that it finds. If it can't find one, it will return null.
+This function will take a BCH address as input. It will search the transaction history for the address, and will return an object about the first `APPROVAL` transaction that it finds. If it can't find one, it will return null.
 
 ```javascript
 const address = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'
@@ -95,7 +95,7 @@ console.log(result)
 
 ## Get an Update Transaction
 
-An *approval* transaction will point to an *update* transaction with its OP_RETURN value. This function is used to retrieve and decode that update transaction. Given a TXID, it will return details from the transaction, including the IPFS CID and timestamp stored in the update transactions OP_RETURN output.
+An *approval* transaction will point to an *update* transaction with its OP_RETURN output. This function is used to retrieve and decode that update transaction. Given a TXID, it will return details from the transaction, including the IPFS CID and timestamp stored in the update transactions OP_RETURN output.
 
 ```javascript
 const txid = 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
