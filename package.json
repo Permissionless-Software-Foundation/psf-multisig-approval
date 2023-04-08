@@ -1,6 +1,6 @@
 {
   "name": "psf-multisig-approval",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Utility library implementing the PS009 specification",
   "main": "index.js",
   "scripts": {
