@@ -269,4 +269,104 @@ describe('#MultisigApproval.js', () => {
       }
     })
   })
+
+  describe('#getCidData', () => {
+    it('should resolve CID data from an IPFS gateway', async () => {
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut.axios, 'get').resolves({ data: mockData.updateData01 })
+
+      const cid = 'bafybeib5d6s6t3tq4lhwp2ocvz7y2ws4czgkrmhlhv5y5aeyh6bqrmsxxi'
+
+      const result = await uut.getCidData({ cid })
+      // console.log('result: ', result)
+
+      // Assert that expected properties exist
+      assert.property(result, 'groupId')
+      assert.property(result, 'keys')
+      assert.property(result, 'walletObj')
+      assert.property(result, 'multisigAddr')
+      assert.property(result, 'p2wdbWritePrice')
+    })
+
+    it('should throw an error if CID is not specified', async () => {
+      try {
+        await uut.getCidData()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'cid a required input')
+      }
+    })
+  })
+
+  describe('#validateApproval', () => {
+    it('should validate a valid approval transaction', async () => {
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut, 'getNftHolderInfo').resolves(mockData.tokenHolderInfo01)
+
+      const inObj = {
+        approvalObj: mockData.approvalObj01,
+        updateObj: mockData.updateObj01,
+        updateData: mockData.updateData01
+      }
+
+      const result = await uut.validateApproval(inObj)
+
+      assert.equal(result, true)
+    })
+
+    it('should throw an error if approvalObj is not specified', async () => {
+      try {
+        await uut.validateApproval()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Output object of getApprovalTx() is expected as input to this function, as \'approvalObj\'')
+      }
+    })
+
+    it('should throw an error if updateObj is not specified', async () => {
+      try {
+        const inObj = {
+          approvalObj: mockData.approvalObj01
+        }
+
+        await uut.validateApproval(inObj)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Output object of getUpdateTx() is expected as input to this function, as \'updateObj\'')
+      }
+    })
+
+    it('should throw an error if updateData is not specified', async () => {
+      try {
+        const inObj = {
+          approvalObj: mockData.approvalObj01,
+          updateObj: mockData.updateObj01
+        }
+
+        await uut.validateApproval(inObj)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Update CID JSON data is expected as input to this function, as \'updateData\'')
+      }
+    })
+
+    it('should return false if addresses do not match', async () => {
+      // Mock dependencies and force desired code path
+      mockData.approvalObj01.approvalTxDetails.vin[0].address = 'bitcoincash:fake-addr'
+
+      const inObj = {
+        approvalObj: mockData.approvalObj01,
+        updateObj: mockData.updateObj01,
+        updateData: mockData.updateData01
+      }
+
+      const result = await uut.validateApproval(inObj)
+
+      assert.equal(result, false)
+    })
+  })
 })

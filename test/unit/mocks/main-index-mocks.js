@@ -187,10 +187,104 @@ const txHistory02 = [
   }
 ]
 
+const tokenHolderInfo01 = {
+  keys: [
+    {
+      addr: 'bitcoincash:qz4zsa22glal5c4jqm748xge657gwuw2d5t9nvg64p',
+      pubKey: '021ca211a04a1d489ae77e01c28c97b02e733893890fda00a359ca8956c2e0d259',
+      nft: 'e86164aaa06efac1d6453951f67beafe042f0bceb9312845a95355b1e93aa846'
+    },
+    {
+      addr: 'bitcoincash:qpfvh07mdt7yq5czndaz5qq4g9q3m87qpspy7xaxgu',
+      pubKey: '0361fd21512b9072e8f6b984d9b04c57e5779867c2ad002999372268770fcb2674',
+      nft: 'da7ccbd5e24e468c9e7402489ca9148b5e76e588b73cc4aa4bbf1ca41d5808ab'
+    },
+    {
+      addr: 'bitcoincash:qpsxtzaa7rg677akcc2znpenpsy5jr2ygywmfd45p2',
+      pubKey: '03b9bdc40c478ab0536be29c368b26c48a5e8d6867fc34b77c727ab690365aae91',
+      nft: '0ec318bede8c2f229db840a24cb63d662ad91e8e6c840e46e6a8ff2d173049ce'
+    },
+    {
+      addr: 'bitcoincash:qqk3aczzggvxnfm7rwm0f9yz20yr00dmpv2f3tasdr',
+      pubKey: '033c930d4cff4ba68a70f7a21443e20ad4176173380d21f8c3ce27f7ce947f3246',
+      nft: '51624e772adafd7c6a9da38774e4f654282199bd5402e049ee087fc2bd900882'
+    },
+    {
+      addr: 'bitcoincash:qpszha37cjn6n83hpxn7zz5ndaa35vygtcgslxhpuc',
+      pubKey: '024be54accec310c2636140336ae548d610ba9b7ce300b3f42494b4a6f2963731f',
+      nft: 'e70cc72eeb15c82e96b1f8127d3b138b2fc8ea101fe9c62302ec641c05d4b97d'
+    }
+  ],
+  keysNotFound: []
+}
+
+const updateData01 = {
+  groupId: '8e8d90ebdb1791d58eba7acd428ff3b1e21c47fb7aba2ba3b5b815aa0fe7d6d5',
+  keys: [
+    {
+      addr: 'bitcoincash:qz4zsa22glal5c4jqm748xge657gwuw2d5t9nvg64p',
+      pubKey: '021ca211a04a1d489ae77e01c28c97b02e733893890fda00a359ca8956c2e0d259',
+      nft: 'e86164aaa06efac1d6453951f67beafe042f0bceb9312845a95355b1e93aa846'
+    },
+    {
+      addr: 'bitcoincash:qpfvh07mdt7yq5czndaz5qq4g9q3m87qpspy7xaxgu',
+      pubKey: '0361fd21512b9072e8f6b984d9b04c57e5779867c2ad002999372268770fcb2674',
+      nft: 'da7ccbd5e24e468c9e7402489ca9148b5e76e588b73cc4aa4bbf1ca41d5808ab'
+    },
+    {
+      addr: 'bitcoincash:qpsxtzaa7rg677akcc2znpenpsy5jr2ygywmfd45p2',
+      pubKey: '03b9bdc40c478ab0536be29c368b26c48a5e8d6867fc34b77c727ab690365aae91',
+      nft: '0ec318bede8c2f229db840a24cb63d662ad91e8e6c840e46e6a8ff2d173049ce'
+    },
+    {
+      addr: 'bitcoincash:qqk3aczzggvxnfm7rwm0f9yz20yr00dmpv2f3tasdr',
+      pubKey: '033c930d4cff4ba68a70f7a21443e20ad4176173380d21f8c3ce27f7ce947f3246',
+      nft: '51624e772adafd7c6a9da38774e4f654282199bd5402e049ee087fc2bd900882'
+    },
+    {
+      addr: 'bitcoincash:qpszha37cjn6n83hpxn7zz5ndaa35vygtcgslxhpuc',
+      pubKey: '024be54accec310c2636140336ae548d610ba9b7ce300b3f42494b4a6f2963731f',
+      nft: 'e70cc72eeb15c82e96b1f8127d3b138b2fc8ea101fe9c62302ec641c05d4b97d'
+    }
+  ],
+  walletObj: {
+    address: 'bitcoincash:pqntzt6wcp38h8ud68wjnwh437uek76lhvhlwcm4fj',
+    scriptHex: 'a91426b12f4ec0627b9f8dd1dd29baf58fb99b7b5fbb87',
+    publicKeys: [
+      '021ca211a04a1d489ae77e01c28c97b02e733893890fda00a359ca8956c2e0d259',
+      '0361fd21512b9072e8f6b984d9b04c57e5779867c2ad002999372268770fcb2674',
+      '03b9bdc40c478ab0536be29c368b26c48a5e8d6867fc34b77c727ab690365aae91',
+      '033c930d4cff4ba68a70f7a21443e20ad4176173380d21f8c3ce27f7ce947f3246',
+      '024be54accec310c2636140336ae548d610ba9b7ce300b3f42494b4a6f2963731f'
+    ],
+    requiredSigners: 3
+  },
+  multisigAddr: 'bitcoincash:pqntzt6wcp38h8ud68wjnwh437uek76lhvhlwcm4fj',
+  p2wdbWritePrice: 0.08335233
+}
+
+const approvalObj01 = {
+  approvalTxid: 'a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900',
+  updateTxid: 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f',
+  approvalTxDetails: approvalTxDetails01,
+  opReturn: 'j\x07APPROVE@f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
+}
+
+const updateObj01 = {
+  cid: 'bafybeib5d6s6t3tq4lhwp2ocvz7y2ws4czgkrmhlhv5y5aeyh6bqrmsxxi',
+  ts: 1676560247168,
+  txid: 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f',
+  txDetails: updateTxDetails01
+}
+
 module.exports = {
   pubkeys01,
   txHistory01,
   txHistory02,
   approvalTxDetails01,
-  updateTxDetails01
+  updateTxDetails01,
+  tokenHolderInfo01,
+  updateData01,
+  approvalObj01,
+  updateObj01
 }

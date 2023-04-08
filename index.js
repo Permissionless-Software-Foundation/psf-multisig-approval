@@ -5,6 +5,7 @@
 
 // global libraries
 const bitcore = require('bitcore-lib-cash')
+const axios = require('axios')
 
 // Local libraries
 const NFTs = require('./lib/nfts')
@@ -12,13 +13,23 @@ const UtilLib = require('./lib/util')
 
 class MultisigApproval {
   constructor (localConfig = {}) {
+    // Dependency Injection
     this.wallet = localConfig.wallet
     if (!this.wallet) {
       throw new Error('Instance of minimal-slp-wallet must be passed in as a property called \'wallet\', when initializing the psf-multisig-approval library.')
     }
 
+    // The default IPFS gateway can be overwritten by the user when this library
+    // is instantiated.
+    this.ipfsGateway = localConfig.ipfsGateway
+    if (!this.ipfsGateway) {
+      this.ipfsGateway = 'https://p2wdb-gateway-678.fullstack.cash'
+    }
+
     // Encapsulate dependencies
     this.bchjs = this.wallet.bchjs
+    this.bitcore = bitcore
+    this.axios = axios
     this.nfts = new NFTs(localConfig)
     this.util = new UtilLib(localConfig)
 
@@ -48,7 +59,7 @@ class MultisigApproval {
 
       return { keys, keysNotFound }
     } catch (err) {
-      console.error('Error in getNftHolderInfo(): ', err)
+      console.error('Error in getNftHolderInfo()')
       throw err
     }
   }
@@ -164,26 +175,6 @@ class MultisigApproval {
         }
 
         return outObj
-
-        // If the first output is not an OP_RETURN, then the tx can be discarded.
-        // if (!txDetails.vout[0].scriptPubKey.asm.includes('OP_RETURN')) {
-        //   continue
-        // }
-
-        // Convert the asm field into sections
-        // const asmSections = txDetails.vout[0].scriptPubKey.asm.split(' ')
-        // console.log('asmSections: ', asmSections)
-        //
-        // // Analyze the second part (the first part that is not OP_RETURN)
-        // const part1 = Buffer.from(asmSections[1], 'hex').toString('ascii')
-        // console.log('part1: ', part1)
-        //
-        // if (part1.includes('APPROVE')) {
-        //   console.log('Approval transaction detected')
-        //   const updateTxid = Buffer.from(asmSections[2], 'hex').toString('ascii')
-        //
-        //   return updateTxid
-        // }
       }
 
       return null
@@ -233,16 +224,104 @@ class MultisigApproval {
     }
   }
 
-  // Given an CID, this function will retrieve the approved data from an IPFS
+  // Given an CID, this function will retrieve the update data from an IPFS
   // gateway.
-  // getCidData()
+  async getCidData (inObj = {}) {
+    try {
+      const { cid } = inObj
 
-  // This function will validate the approval transaction. Given the TXID of the
-  // approval transaction, and the data from the update transaction, this
-  // function will return `true` if a threshold of NFT holders can be verified
-  // to have signed the approval transaction. Unless explicitly overridden, the
-  // threshold is set by the `requiredSigners` number from the IPFS data.
-  // validateApproval()
+      // Input validation
+      if (!cid) {
+        throw new Error('cid a required input')
+      }
+
+      const urlStr = `${this.ipfsGateway}/ipfs/${cid}/data.json`
+      // console.log('urlStr: ', urlStr)
+
+      const request = await this.axios.get(urlStr)
+
+      return request.data
+    } catch (err) {
+      console.error('Error in getCidData()')
+      throw err
+    }
+  }
+
+  // This function will validate the approval transaction.
+  // This function will return true or false, to indicate the validity of the
+  // approval transaction.
+  // The input to this function is the output of several of the above function:
+  // - approvalObj is the output of getApprovalTx()
+  // - updateObj is the output of getUpdateTx()
+  // - updateData is the IPFS CID data retrieved with getCidData()
+  // - groupTokenId is optional. If not specified, it will default to the Group
+  //   token used to generate the PSF Minting Council NFTs.
+  async validateApproval (inObj = {}) {
+    try {
+      // console.log('inObj: ', JSON.stringify(inObj, null, 2))
+
+      const { approvalObj, updateObj, updateData, groupTokenId } = inObj
+
+      let validationResult = false
+
+      // Input validation
+      if (!approvalObj) {
+        throw new Error('Output object of getApprovalTx() is expected as input to this function, as \'approvalObj\'')
+      }
+      if (!updateObj) {
+        throw new Error('Output object of getUpdateTx() is expected as input to this function, as \'updateObj\'')
+      }
+      if (!updateData) {
+        throw new Error('Update CID JSON data is expected as input to this function, as \'updateData\'')
+      }
+
+      // Regenerate the multisig address from the pubkeys in the update data.
+      // Ensure it matches the input address to the approval transaction.
+      const pubKeys = updateData.walletObj.publicKeys
+      const requiredSigners = updateData.walletObj.requiredSigners
+      const approvalInputAddr = approvalObj.approvalTxDetails.vin[0].address
+      const msAddr = new this.bitcore.Address(pubKeys, requiredSigners).toString()
+      if (msAddr !== approvalInputAddr) {
+        console.log(`Approval TX input address (${approvalInputAddr}) does not match calculated multisig address ${msAddr}`)
+        return validationResult
+      }
+
+      // Get public key data for each NFT holder, from the blockchain.
+      const nftData = await this.getNftHolderInfo(groupTokenId)
+      const tokenPubKeys = nftData.keys
+
+      // Loop through the public keys from the token data, and count the matches.
+      let matches = 0
+      for (let i = 0; i < tokenPubKeys.length; i++) {
+        const thisTokenPubKey = tokenPubKeys[i].pubKey
+
+        // Loop through the public keys from the update data
+        for (let j = 0; j < pubKeys.length; j++) {
+          const thisUpdatePubKey = pubKeys[j]
+
+          if (thisTokenPubKey === thisUpdatePubKey) {
+            matches++
+            break
+          }
+        }
+      }
+
+      // Set a threshold for success.
+      let threshold = 2 // Minimum
+      if (requiredSigners > threshold) threshold = requiredSigners
+
+      // If the threshold of public keys match, then the approval transaction
+      // has been validated.
+      if (matches >= threshold) {
+        validationResult = true
+      }
+
+      return validationResult
+    } catch (err) {
+      console.error('Error in validateApproval()')
+      throw err
+    }
+  }
 }
 
 module.exports = MultisigApproval
