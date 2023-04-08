@@ -85,6 +85,13 @@ describe('#psf-multisig-approval', () => {
       const cid = 'bafybeib5d6s6t3tq4lhwp2ocvz7y2ws4czgkrmhlhv5y5aeyh6bqrmsxxi'
       const result = await uut.getCidData({ cid })
       // console.log('result: ', result)
+
+      // Assert expected properties exist
+      assert.property(result, 'groupId')
+      assert.property(result, 'keys')
+      assert.property(result, 'walletObj')
+      assert.property(result, 'multisigAddr')
+      assert.property(result, 'p2wdbWritePrice')
     })
   })
 
