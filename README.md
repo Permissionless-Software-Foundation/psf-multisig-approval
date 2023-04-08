@@ -90,6 +90,33 @@ console.log(result)
     },
     opReturn: 'j\x07APPROVE@f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
   }
+*/
+```
+
+## Get an Update Transaction
+
+An *approval* transaction will point to an *update* transaction with its OP_RETURN value. This function is used to retrieve and decode that update transaction. Given a TXID, it will return details from the transaction, including the IPFS CID and timestamp stored in the update transactions OP_RETURN output.
+
+```javascript
+const txid = 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
+
+const result = await uut.getUpdateTx({ txid })
+console.log(result)
+
+/*
+  {
+    cid: 'bafybeib5d6s6t3tq4lhwp2ocvz7y2ws4czgkrmhlhv5y5aeyh6bqrmsxxi',
+    ts: 1676560247168,
+    txid: 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f',
+    txDetails: {
+      txid: 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f',
+      hash: 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f',
+      vin: [ [Object] ],
+      vout: [ [Object], [Object], [Object], [Object] ],
+      ...
+      isValidSlp: false
+    }
+  }
 
 */
 ```

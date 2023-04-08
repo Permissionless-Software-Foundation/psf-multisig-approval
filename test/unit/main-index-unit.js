@@ -225,4 +225,48 @@ describe('#MultisigApproval.js', () => {
       }
     })
   })
+
+  describe('#getUpdateTx', () => {
+    it('should get data from an update transaction', async () => {
+      // Mock dependencies and force desired code path
+      sandbox.stub(uut.util, 'getTxData').resolves(mockData.updateTxDetails01)
+
+      const txid = 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
+
+      const result = await uut.getUpdateTx({ txid })
+      // console.log('result: ', result)
+
+      // Assert returned object has expected properties
+      assert.property(result, 'cid')
+      assert.property(result, 'ts')
+      assert.property(result, 'txid')
+      assert.property(result, 'txDetails')
+    })
+
+    it('should throw an error if a txid is given as input', async () => {
+      try {
+        await uut.getUpdateTx()
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'txid required')
+      }
+    })
+
+    it('should throw an error if OP_RETURN can not be decoded', async () => {
+      try {
+        // Mock dependencies and force desired code path
+        mockData.updateTxDetails01.vout[0].scriptPubKey.hex = '0123456789abcdef'
+        sandbox.stub(uut.util, 'getTxData').resolves(mockData.updateTxDetails01)
+
+        const txid = 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
+
+        await uut.getUpdateTx({ txid })
+
+        assert.fail('Unexpected result')
+      } catch (err) {
+        assert.include(err.message, 'Could not parse JSON inside')
+      }
+    })
+  })
 })

@@ -193,6 +193,46 @@ class MultisigApproval {
     }
   }
 
+  // This function will retrieve an update transaction, given its txid. It will
+  // return an object with data about the transaction, including the CID and
+  // timestamp values encoded in the transactions OP_RETURN.
+  async getUpdateTx (inObj = {}) {
+    try {
+      const { txid } = inObj
+
+      // Input validation
+      if (!txid) {
+        throw new Error('txid required')
+      }
+
+      // Get the transaction details for the transaction
+      const txDetails = await this.util.getTxData(txid)
+      // console.log('txDetails: ', JSON.stringify(txDetails, null, 2))
+      // console.log(`txid: ${txid}`)
+
+      let updateObj = {}
+      try {
+        const out2ascii = Buffer.from(txDetails.vout[0].scriptPubKey.hex, 'hex').toString('ascii')
+        // console.log('out2ascii: ', out2ascii)
+
+        const jsonStr = out2ascii.slice(4)
+        // console.log('jsonStr: ', jsonStr)
+
+        updateObj = JSON.parse(jsonStr)
+      } catch (err) {
+        throw new Error('Could not parse JSON inside the transaction')
+      }
+
+      updateObj.txid = txid
+      updateObj.txDetails = txDetails
+
+      return updateObj
+    } catch (err) {
+      console.error('Error in getUpdateTx()')
+      throw err
+    }
+  }
+
   // Given an CID, this function will retrieve the approved data from an IPFS
   // gateway.
   // getCidData()

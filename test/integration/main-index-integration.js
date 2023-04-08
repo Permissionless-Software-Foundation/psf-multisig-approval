@@ -57,11 +57,26 @@ describe('#psf-multisig-approval', () => {
     it('should retrieve the latest APPROVAL transaction from an address', async () => {
       const address = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'
 
-      const result = await uut.getApprovalTx({address})
+      const result = await uut.getApprovalTx({ address })
       // const result = await uut.getApprovalTx({ address, filterTxids: ['a63f9fbcc901316e6e89f5a8caaad6b2ab268278b29866c6c22088bd3ab93900'] })
       console.log('result: ', result)
 
       assert.equal(result.updateTxid.length, 64)
+    })
+  })
+
+  describe('#getUpdateTx', () => {
+    it('should retrieve an update transaction', async () => {
+      const txid = 'f8ea1fcd4481adfd62c6251c6a4f63f3d5ac3d5fdcc38b350d321d93254df65f'
+
+      const result = await uut.getUpdateTx({ txid })
+      // console.log('result: ', result)
+
+      // Assert returned object has expected properties
+      assert.property(result, 'cid')
+      assert.property(result, 'ts')
+      assert.property(result, 'txid')
+      assert.property(result, 'txDetails')
     })
   })
 })
