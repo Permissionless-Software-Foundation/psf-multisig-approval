@@ -112,6 +112,23 @@ describe('#NFTs', () => {
         assert.include(err.message, 'test error')
       }
     })
+
+    it('should throw an error if Cash Stack server does not return nftHolder property', async () => {
+      try {
+        // Mock dependencies and force desired code path.
+        sandbox.stub(uut.wallet, 'getTokenData').resolves({
+          genesisData: {}
+        })
+
+        const nfts = ['a']
+
+        await uut.getAddrsFromNfts(nfts)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'SLP indexer data does not include a holder address for this NFT.')
+      }
+    })
   })
 
   describe('#findKeys', () => {

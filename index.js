@@ -52,8 +52,10 @@ class MultisigApproval {
       // console.log('groupTokenId: ', groupTokenId)
 
       const nfts = await this.nfts.getNftsFromGroup()
+      // console.log('getNftHolderInfo() nfts: ', nfts)
 
       const addrs = await this.nfts.getAddrsFromNfts(nfts)
+      // console.log('getNftHolderInfo() addrs: ', addrs)
 
       const { keys, keysNotFound } = await this.nfts.findKeys(addrs, nfts)
 
