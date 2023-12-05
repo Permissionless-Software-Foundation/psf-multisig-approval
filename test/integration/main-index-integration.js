@@ -15,7 +15,8 @@ describe('#psf-multisig-approval', () => {
   before(async () => {
     const wallet = new SlpWallet(undefined, {
       interface: 'consumer-api',
-      restURL: 'https://bch-consumer-anacortes-wa-usa.fullstackcash.nl'
+      // restURL: 'https://bch-consumer-anacortes-wa-usa.fullstackcash.nl'
+      restURL: 'https://free-bch.fullstack.cash'
     })
     await wallet.walletInfoPromise
 
