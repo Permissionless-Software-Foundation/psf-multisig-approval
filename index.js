@@ -4,7 +4,7 @@
 */
 
 // global libraries
-const bitcore = require('bitcore-lib-cash')
+const bitcore = require('@chris.troutner/bitcore-lib-cash')
 const axios = require('axios')
 
 // Local libraries
