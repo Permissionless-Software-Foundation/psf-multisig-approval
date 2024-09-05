@@ -23,7 +23,8 @@ class MultisigApproval {
     // is instantiated.
     this.ipfsGateway = localConfig.ipfsGateway
     if (!this.ipfsGateway) {
-      this.ipfsGateway = 'https://p2wdb-gateway-678.fullstack.cash'
+      // this.ipfsGateway = 'https://p2wdb-gateway-678.fullstack.cash'
+      this.ipfsGateway = 'https://pin.fullstack.cash'
     }
 
     // Encapsulate dependencies
@@ -237,7 +238,7 @@ class MultisigApproval {
         throw new Error('cid a required input')
       }
 
-      const urlStr = `${this.ipfsGateway}/ipfs/${cid}/data.json`
+      const urlStr = `${this.ipfsGateway}/ipfs/view/${cid}/data.json`
       // console.log('urlStr: ', urlStr)
 
       const request = await this.axios.get(urlStr)
