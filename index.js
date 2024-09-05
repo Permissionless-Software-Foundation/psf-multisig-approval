@@ -23,7 +23,8 @@ class MultisigApproval {
     // is instantiated.
     this.ipfsGateway = localConfig.ipfsGateway
     if (!this.ipfsGateway) {
-      this.ipfsGateway = 'https://p2wdb-gateway-678.fullstack.cash'
+      // this.ipfsGateway = 'https://p2wdb-gateway-678.fullstack.cash'
+      this.ipfsGateway = 'https://pin.fullstack.cash'
     }
 
     // Encapsulate dependencies
@@ -135,7 +136,7 @@ class MultisigApproval {
 
       // Get the transaction history for the address
       const txHistory = await this.wallet.getTransactions(address)
-      // console.log('txHistory: ', JSON.stringify(txHistory, null, 2))
+      console.log('txHistory: ', JSON.stringify(txHistory, null, 2))
 
       // Loop through the transaction history
       for (let i = 0; i < txHistory.length; i++) {
@@ -181,7 +182,7 @@ class MultisigApproval {
 
       return null
     } catch (err) {
-      console.error('Error in getApprovedData()')
+      console.error('Error in getApprovedData(): ', err)
       throw err
     }
   }
@@ -237,7 +238,7 @@ class MultisigApproval {
         throw new Error('cid a required input')
       }
 
-      const urlStr = `${this.ipfsGateway}/ipfs/${cid}/data.json`
+      const urlStr = `${this.ipfsGateway}/ipfs/view/${cid}/data.json`
       // console.log('urlStr: ', urlStr)
 
       const request = await this.axios.get(urlStr)
@@ -323,6 +324,22 @@ class MultisigApproval {
       console.error('Error in validateApproval()')
       throw err
     }
+  }
+
+  // ToDo: This function will return an array of objects, where each object is
+  // a validated update transaction. It will provide a validated historical list
+  // of all the price updates.
+  // Each object in the array should contain a timestamp, a block height of the
+  // validated update transaction, and the price that was set with that tx.
+  //
+  getUpdateHistory () {
+    // address is an input value.
+
+    // Loop through the transaction history, and retrieve all APPROVAL transactions
+
+    // For each APPROVAL transaction, retrieve the UPDATE tx that it points to.
+
+    // Validate the UPDATE tx, if it passes, then add it to the output array
   }
 }
 
