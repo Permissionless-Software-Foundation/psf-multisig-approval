@@ -136,7 +136,7 @@ class MultisigApproval {
 
       // Get the transaction history for the address
       const txHistory = await this.wallet.getTransactions(address)
-      console.log('txHistory: ', JSON.stringify(txHistory, null, 2))
+      // console.log('txHistory: ', JSON.stringify(txHistory, null, 2))
 
       // Loop through the transaction history
       for (let i = 0; i < txHistory.length; i++) {
