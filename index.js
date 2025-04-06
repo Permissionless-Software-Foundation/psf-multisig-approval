@@ -242,10 +242,20 @@ class MultisigApproval {
         throw new Error('cid a required input')
       }
 
-      const urlStr = `${this.ipfsGateway}/ipfs/view/${cid}/data.json`
-      // console.log('urlStr: ', urlStr)
+      let request = null
+      try {
+        // Try older token-tiger format first (directory-based CID)
+        const urlStr = `${this.ipfsGateway}/ipfs/view/${cid}/data.json`
+        // console.log('urlStr: ', urlStr)
 
-      const request = await this.axios.get(urlStr)
+        request = await this.axios.get(urlStr)
+      } catch (err) {
+        // Try the new format (single file CID)
+        const urlStr = `${this.ipfsGateway}/ipfs/view/${cid}`
+        // console.log('urlStr: ', urlStr)
+
+        request = await this.axios.get(urlStr)
+      }
 
       return request.data
     } catch (err) {
