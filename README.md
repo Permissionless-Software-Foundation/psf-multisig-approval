@@ -1,6 +1,6 @@
 # psf-multisig-approval
 
-This is an npm library for node.js. It implements the [PS009 specification for multisignature approval](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps009-multisig-approval.md). The main consumers of this library of [psf-bch-wallet](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet) and [ipfs-p2wdb-service](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service).
+This is an npm library for node.js. It implements the [PS009 specification for multisignature approval](https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps009-multisig-approval.md). The main consumers of this library is the [psffpp](https://github.com/Permissionless-Software-Foundation/psffpp) library and various [Cash Stack](https://cashstack.info) infrastructure.
 
 ## Instancing Library
 This library depends on [minimal-slp-wallet](https://www.npmjs.com/package/minimal-slp-wallet). An instance of that library is expected to be injected into this this one when instantiated. Here is an example:
@@ -69,7 +69,7 @@ console.log(result)
 ```
 
 ## Get an Approval Transaction
-This function will take a BCH address as input. It will search the transaction history for the address, and will return an object about the first `APPROVAL` transaction that it finds. If it can't find one, it will return null.
+This function will take a BCH address as input. It will search the transaction history for the address, and will return an object for the first `APPROVAL` transaction that it finds. If it can't find one, it will return null.
 
 ```javascript
 const address = 'bitcoincash:qrwe6kxhvu47ve6jvgrf2d93w0q38av7s5xm9xfehr'
@@ -129,7 +129,7 @@ The update transaction will reference an IPFS CID. That data will need to be ret
 // Instance this library and overwrite the default IPFS gateway
 const ps009 = new MultisigApproval({
   wallet,
-  ipfsGateway: 'https://p2wdb-gateway-678.fullstack.cash'
+  ipfsGateway: 'https://pin.fullstack.cash'
 })
 
 const cid = 'bafybeib5d6s6t3tq4lhwp2ocvz7y2ws4czgkrmhlhv5y5aeyh6bqrmsxxi'

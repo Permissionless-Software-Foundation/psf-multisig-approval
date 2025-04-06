@@ -38,6 +38,10 @@ class MultisigApproval {
     this.getNftHolderInfo = this.getNftHolderInfo.bind(this)
     this.createMultisigAddress = this.createMultisigAddress.bind(this)
     this.getApprovalTx = this.getApprovalTx.bind(this)
+    this.getUpdateTx = this.getUpdateTx.bind(this)
+    this.getCidData = this.getCidData.bind(this)
+    this.validateApproval = this.validateApproval.bind(this)
+    this.getUpdateHistory = this.getUpdateHistory.bind(this)
 
     // Create a transaction details cache, to reduce the number of API calls.
     this.txCache = {}
