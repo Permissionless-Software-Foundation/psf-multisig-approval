@@ -41,7 +41,7 @@ class MultisigApproval {
     this.getUpdateTx = this.getUpdateTx.bind(this)
     this.getCidData = this.getCidData.bind(this)
     this.validateApproval = this.validateApproval.bind(this)
-    this.getUpdateHistory = this.getUpdateHistory.bind(this)
+    this.getAllApprovalTxs = this.getAllApprovalTxs.bind(this)
 
     // Create a transaction details cache, to reduce the number of API calls.
     this.txCache = {}
@@ -340,20 +340,78 @@ class MultisigApproval {
     }
   }
 
-  // ToDo: This function will return an array of objects, where each object is
-  // a validated update transaction. It will provide a validated historical list
-  // of all the price updates.
-  // Each object in the array should contain a timestamp, a block height of the
-  // validated update transaction, and the price that was set with that tx.
-  //
-  getUpdateHistory () {
-    // address is an input value.
+  // Given a BCH address, scan its transaction history to find all the
+  // APPROVAL transactions. This function returns an array of objects. Each
+  // object represents an APPROVAL transaction.
+  // If no APPROVAL transaction can be found, then function returns null.
+  // An optional input, filterTxids, is an array of transaction IDs to ignore. This can
+  // be used to ignore/skip any known, fake approval transactions.
+  async getAllApprovalTxs (inObj = {}) {
+    try {
+      let address = inObj.address
+      const { filterTxids } = inObj
 
-    // Loop through the transaction history, and retrieve all APPROVAL transactions
+      const approvalTxs = []
 
-    // For each APPROVAL transaction, retrieve the UPDATE tx that it points to.
+      // Input validation
+      if (address.includes('simpleledger:')) {
+        address = this.bchjs.SLP.Address.toCashAddress(address)
+      }
+      if (!address.includes('bitcoincash:')) {
+        throw new Error('Input address must start with bitcoincash: or simpleledger:')
+      }
 
-    // Validate the UPDATE tx, if it passes, then add it to the output array
+      // Get the transaction history for the address
+      const txHistory = await this.wallet.getTransactions(address)
+      // console.log('txHistory: ', JSON.stringify(txHistory, null, 2))
+
+      // Loop through the transaction history
+      for (let i = 0; i < txHistory.length; i++) {
+        const thisTxid = txHistory[i]
+
+        // const height = thisTxid.height
+        const txid = thisTxid.tx_hash
+
+        // Skip the txid if it is in the filter list.
+        if (Array.isArray(filterTxids)) {
+          const txidFound = filterTxids.find(x => x === txid)
+          // console.log('txidFound: ', txidFound)
+          if (txidFound) {
+            continue
+          }
+        }
+
+        // Get the transaction details for the transaction
+        const txDetails = await this.util.getTxData(txid)
+        // console.log('txDetails: ', JSON.stringify(txDetails, null, 2))
+        // console.log(`txid: ${txid}`)
+
+        const out2ascii = Buffer.from(txDetails.vout[0].scriptPubKey.hex, 'hex').toString('ascii')
+        // console.log('out2ascii: ', out2ascii)
+
+        // If the first output is not an OP_RETURN, then the tx can be discarded.
+        if (!out2ascii.includes('APPROVE')) {
+          continue
+        }
+
+        const updateTxid = out2ascii.slice(10)
+        // console.log('updateTxid: ', updateTxid)
+
+        const outObj = {
+          approvalTxid: txid,
+          updateTxid,
+          approvalTxDetails: txDetails,
+          opReturn: out2ascii
+        }
+
+        approvalTxs.push(outObj)
+      }
+
+      return approvalTxs
+    } catch (err) {
+      console.error('Error in getAllApprovalTxs(): ', err)
+      throw err
+    }
   }
 }
 
