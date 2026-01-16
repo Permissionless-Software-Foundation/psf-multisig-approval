@@ -26,7 +26,7 @@ const mockUtxos = {
   ]
 }
 
-module.exports = {
+export {
   mockBalance,
   mockUtxos
 }

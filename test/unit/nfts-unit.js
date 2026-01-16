@@ -3,19 +3,16 @@
 */
 
 // npm libraries
-const chai = require('chai')
-const sinon = require('sinon')
-// const cloneDeep = require('lodash.clonedeep')
-const SlpWallet = require('minimal-slp-wallet')
-
-// Locally global variables.
-const assert = chai.assert
+import { assert } from 'chai'
+import sinon from 'sinon'
+// import cloneDeep from 'lodash.clonedeep'
+import SlpWallet from 'minimal-slp-wallet'
 
 // Mocking data libraries.
-// const mockDataLib = require('./mocks/util-mocks')
+// import mockDataLib from './mocks/util-mocks.js'
 
 // Unit under test
-const NftsLib = require('../../lib/nfts')
+import NftsLib from '../../lib/nfts.js'
 
 describe('#NFTs', () => {
   let sandbox

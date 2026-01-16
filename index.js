@@ -4,12 +4,12 @@
 */
 
 // global libraries
-const bitcore = require('@chris.troutner/bitcore-lib-cash')
-const axios = require('axios')
+import bitcore from '@chris.troutner/bitcore-lib-cash'
+import axios from 'axios'
 
 // Local libraries
-const NFTs = require('./lib/nfts')
-const UtilLib = require('./lib/util')
+import NFTs from './lib/nfts.js'
+import UtilLib from './lib/util.js'
 
 class MultisigApproval {
   constructor (localConfig = {}) {
@@ -415,4 +415,4 @@ class MultisigApproval {
   }
 }
 
-module.exports = MultisigApproval
+export default MultisigApproval

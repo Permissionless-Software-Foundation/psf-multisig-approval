@@ -3,16 +3,16 @@
 */
 
 // npm libraries
-const assert = require('chai').assert
-const sinon = require('sinon')
-// const cloneDeep = require('lodash.clonedeep')
-const SlpWallet = require('minimal-slp-wallet')
+import { assert } from 'chai'
+import sinon from 'sinon'
+// import cloneDeep from 'lodash.clonedeep'
+import SlpWallet from 'minimal-slp-wallet'
 
 // Local libraries
-// const mockDataLib = require('./mocks/util-mocks')
+// import mockDataLib from './mocks/util-mocks.js'
 
 // Unit under test
-const UtilLib = require('../../lib/util')
+import UtilLib from '../../lib/util.js'
 
 describe('#Util', () => {
   let sandbox
