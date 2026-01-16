@@ -3,11 +3,11 @@
 */
 
 // Global npm libraries
-const SlpWallet = require('minimal-slp-wallet')
-const assert = require('chai').assert
+import SlpWallet from 'minimal-slp-wallet'
+import { assert } from 'chai'
 
 // Local libraries
-const MultisigApproval = require('../../index')
+import MultisigApproval from '../../index.js'
 
 describe('#psf-multisig-approval', () => {
   let uut

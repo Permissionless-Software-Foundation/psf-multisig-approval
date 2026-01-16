@@ -3,16 +3,16 @@
 */
 
 // npm libraries
-const assert = require('chai').assert
-const sinon = require('sinon')
-const cloneDeep = require('lodash.clonedeep')
-const SlpWallet = require('minimal-slp-wallet')
+import { assert } from 'chai'
+import sinon from 'sinon'
+import cloneDeep from 'lodash.clonedeep'
+import SlpWallet from 'minimal-slp-wallet'
 
 // Mocking data libraries.
 
 // Local libraries
-const MultisigApproval = require('../../index')
-const mockDataLib = require('./mocks/main-index-mocks')
+import MultisigApproval from '../../index.js'
+import mockDataLib from './mocks/main-index-mocks.js'
 
 describe('#MultisigApproval.js', () => {
   let sandbox

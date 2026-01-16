@@ -277,7 +277,19 @@ const updateObj01 = {
   txDetails: updateTxDetails01
 }
 
-module.exports = {
+export {
+  pubkeys01,
+  txHistory01,
+  txHistory02,
+  approvalTxDetails01,
+  updateTxDetails01,
+  tokenHolderInfo01,
+  updateData01,
+  approvalObj01,
+  updateObj01
+}
+
+export default {
   pubkeys01,
   txHistory01,
   txHistory02,
